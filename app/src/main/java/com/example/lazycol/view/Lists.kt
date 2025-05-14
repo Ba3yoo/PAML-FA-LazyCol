@@ -14,25 +14,34 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.lazycol.ui.theme.LazycolTheme
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import com.example.lazycol.viewModel.UserViewModel
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lazycol.model.User
 
 @Composable
-fun userList(viewModel: UserViewModel) {
-    val users by viewModel.users.observeAsState(null)
+fun userList(onClickDetail : (Int) -> Unit, viewModel: UserViewModel = viewModel()) {
+//    val users by viewModel.users.observeAsState(null)
+    val users = viewModel.users.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.fetchUser()
     }
@@ -53,14 +62,9 @@ fun userList(viewModel: UserViewModel) {
                 Text("225150701111005 - Bayusatya Mufti Muhammad", style = MaterialTheme.typography.headlineMedium)
             }
         }
-        if(users == null) {
-            item{
-                Text(text="Waiting")
-            }
-        } else{
-            val listUser = users ?: emptyList<User>()
-            items(listUser){
-                user -> cards(user)
+        if (users.value != null) {
+            items(users.value!!){
+                    user -> cards(user) {index -> onClickDetail(index)}
             }
         }
     }

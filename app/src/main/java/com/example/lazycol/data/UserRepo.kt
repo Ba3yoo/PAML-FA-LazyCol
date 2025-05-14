@@ -9,4 +9,8 @@ class UserRepo {
     suspend fun getUsers(): List<User> {
         return userService.getUsers()
     }
+
+    suspend fun getUser(id: Int): User {
+        return userService.getUser(id)
+    }
 }
